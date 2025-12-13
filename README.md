@@ -15,6 +15,27 @@ O MatVerse Symbios v3.0 resolve a crise histórica de governança algorítmica a
 3. **Antifragilidade Comprovada**: Sistema que melhora sob ruído (β_q = 1.23 > 1)
 4. **Verificação Criptográfica**: PoSE/PoLE em blockchain para garantias matemáticas
 
+## MatVerse Protocol — Benchmark #001 Frozen
+
+Execute e verifique você mesmo:
+
+```bash
+docker build -t matverse-benchmark .
+docker run matverse-benchmark
+```
+
+Resultado esperado:
+
+```
+VERDICT: ACCEPT
+H(M): 2d1b2b710b0906461e99496ace6f351f12b1f29fab1d3af0935dd41cbbfa4f28
+```
+
+Esse hash é eterno. Qualquer desvio = falha.
+Mais benchmarks virão. Este é o primeiro fato inabalável do MatVerse.
+
+```
+
 ## 📊 RESULTADOS VERIFICADOS (Fase 7)
 
 | Métrica | Inicial | Final | Δ | Status |
