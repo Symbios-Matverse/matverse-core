@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "claim_id": "benchmark_002_antifragil_stress_gain",
+  "description": "Demonstrate antifragility: coherence gain (Psi) and tail-risk reduction (CVaR) under controlled stress",
+  "seed": 42,
+  "stress_levels": 10,
+  "expected": {
+    "final_omega_prime": { "min": 0.90 },
+    "final_psi": { "min": 0.94 },
+    "final_cvar_alpha_095": { "max": 0.02 }
+  },
+  "frozen_date": "2025-12-13",
+  "frozen": true
+}
