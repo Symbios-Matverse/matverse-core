@@ -1,0 +1,11 @@
+{
+  "benchmark": "002_antifragil",
+  "version": "1.0.0",
+  "seed": 42,
+  "stress_levels": 10,
+  "metrics": {
+    "final_omega_prime": 0.9361,
+    "final_psi": 0.94,
+    "final_cvar_alpha_095": 0.02
+  }
+}

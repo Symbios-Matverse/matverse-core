@@ -1,0 +1,10 @@
+{
+  "benchmark": "001_baseline",
+  "version": "1.0.0",
+  "seed": 42,
+  "metrics": {
+    "omega_prime": 0.95,
+    "psi": 0.921,
+    "cvar_alpha_095": 0.0353
+  }
+}
