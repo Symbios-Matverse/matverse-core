@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "claim_id": "benchmark_001_baseline_deterministic_metrics",
+  "description": "Baseline deterministic computation of Ω′, Ψ and CVaR with fixed seed",
+  "seed": 42,
+  "expected": {
+    "omega_prime": { "value": 0.95, "tolerance": 0.01 },
+    "psi": { "min": 0.90 },
+    "cvar_alpha_095": { "max": 0.05 }
+  },
+  "frozen_date": "2025-12-13",
+  "frozen": true
+}
