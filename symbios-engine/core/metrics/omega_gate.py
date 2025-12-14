@@ -59,7 +59,10 @@ class OmegaGate:
 
         # Limiares para decisão binária
         self.thresholds = thresholds or {
-            'omega_min': 0.85,    # Ω mínimo para aprovação
+            # O limiar Ω mínimo foi ajustado para 0.75 para refletir
+            # os pesos padrão e permitir que estados equilibrados
+            # com baixa latência e risco passem na decisão binária.
+            'omega_min': 0.75,    # Ω mínimo para aprovação
             'psi_min': 0.80,      # Ψ mínimo
             'cvar_max': 0.05,     # CVaR máximo
             'theta_max': 100.0,   # Latência máxima (ms)
