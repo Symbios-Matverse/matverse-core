@@ -1,0 +1,37 @@
+name: governed-value-chain
+
+on:
+  pull_request:
+    paths:
+      - 'symbios-engine/core/valuechain.py'
+      - 'symbios-engine/tests/test_valuechain.py'
+      - '.github/workflows/value-chain-ci.yml'
+  push:
+    branches:
+      - feature/value-chain-v1
+    paths:
+      - 'symbios-engine/core/valuechain.py'
+      - 'symbios-engine/tests/test_valuechain.py'
+      - '.github/workflows/value-chain-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    defaults:
+      run:
+        working-directory: symbios-engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install test dependency
+        run: python -m pip install --disable-pip-version-check pytest
+      - name: Run governed value-chain tests
+        run: python -m pytest -q tests/test_valuechain.py
