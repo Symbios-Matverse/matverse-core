@@ -6,11 +6,13 @@ on:
       - 'symbios-engine/core/valuechain.py'
       - 'symbios-engine/core/witness_adapter.py'
       - 'symbios-engine/core/authority.py'
+      - 'symbios-engine/core/ed25519_crypto.py'
       - 'symbios-engine/core/settlement.py'
       - 'symbios-engine/core/mmnb.py'
       - 'symbios-engine/tests/test_valuechain.py'
       - 'symbios-engine/tests/test_witness_adapter.py'
       - 'symbios-engine/tests/test_authority.py'
+      - 'symbios-engine/tests/test_authority_crypto.py'
       - 'symbios-engine/tests/test_settlement.py'
       - 'symbios-engine/tests/test_mmnb.py'
       - '.github/workflows/value-chain-ci.yml'
@@ -21,11 +23,13 @@ on:
       - 'symbios-engine/core/valuechain.py'
       - 'symbios-engine/core/witness_adapter.py'
       - 'symbios-engine/core/authority.py'
+      - 'symbios-engine/core/ed25519_crypto.py'
       - 'symbios-engine/core/settlement.py'
       - 'symbios-engine/core/mmnb.py'
       - 'symbios-engine/tests/test_valuechain.py'
       - 'symbios-engine/tests/test_witness_adapter.py'
       - 'symbios-engine/tests/test_authority.py'
+      - 'symbios-engine/tests/test_authority_crypto.py'
       - 'symbios-engine/tests/test_settlement.py'
       - 'symbios-engine/tests/test_mmnb.py'
       - '.github/workflows/value-chain-ci.yml'
@@ -47,7 +51,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install test dependency
-        run: python -m pip install --disable-pip-version-check pytest
+      - name: Install test dependencies
+        run: python -m pip install --disable-pip-version-check pytest 'cryptography>=45.0.0,<46.0.0'
       - name: Run governed value-chain integration tests
-        run: python -m pytest -q tests/test_valuechain.py tests/test_witness_adapter.py tests/test_authority.py tests/test_settlement.py tests/test_mmnb.py
+        run: python -m pytest -q tests/test_valuechain.py tests/test_witness_adapter.py tests/test_authority.py tests/test_authority_crypto.py tests/test_settlement.py tests/test_mmnb.py
