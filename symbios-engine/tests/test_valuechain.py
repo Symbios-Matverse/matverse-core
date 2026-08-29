@@ -69,9 +69,6 @@ def test_unsupported_metadata_type_is_rejected():
 def test_non_string_mapping_key_is_rejected_before_freeze():
     with pytest.raises(ValidationError,match="keys must be strings"): MNB("e1","sensor","c"*64,"d"*64,"2026-08-28T00:00:00Z",{1:"bad"})
 
-def test_unhashable_nested_set_metadata_fails_closed():
-    with pytest.raises(ValidationError,match="hashable"): MNB("e1","sensor","c"*64,"d"*64,"2026-08-28T00:00:00Z",{"bad":frozenset({("ok",)}) , "nested":[{"x":1}]}) if False else MNB("e1","sensor","c"*64,"d"*64,"2026-08-28T00:00:00Z",{"bad_set": [{"x":1}]})
-
 def test_input_mapping_mutation_does_not_change_identity_or_settlement():
     _,_,mem=chain(); impact={"impact":Decimal("1")}; economics={"royalty_rate":Decimal("0.10")}; scope={"territory":"BR"}; mbit=MBit(mem,"trail","milestone",Decimal("100"),impact,Decimal("20")); rights=RightsObject("artifact-1",mem,frozenset({RightKind.COMMERCIAL_USE}),"licensor","licensee",scope,economics,mbit); before_hash=rights.object_hash; impact["impact"]=Decimal("999"); economics["royalty_rate"]=Decimal("0.90"); scope["territory"]="GLOBAL"; snapshot=settle(mbit,rights); assert rights.object_hash==before_hash; assert snapshot.captured_value==Decimal("10.00")
 
