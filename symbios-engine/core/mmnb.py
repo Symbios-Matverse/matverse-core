@@ -3,10 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from hashlib import sha256
 import json
+import re
 from typing import Any, Mapping, Sequence
 
 from .settlement import EconomicObservation, SettlementReceipt, verify_ledger_chain
 from .valuechain import MBit, MemBit, MemNanoBit, MNB, RightsObject, ValidationError
+
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 def _hash(payload: Mapping[str, Any]) -> str:
@@ -14,9 +17,15 @@ def _hash(payload: Mapping[str, Any]) -> str:
     return sha256(raw.encode("utf-8")).hexdigest()
 
 
+def _require_hash(name: str, value: Any) -> str:
+    if not isinstance(value, str) or _SHA256_RE.fullmatch(value) is None:
+        raise ValidationError(f"{name} must be a lowercase 64-hex digest")
+    return value
+
+
 @dataclass(frozen=True)
 class MMNBEnvelope:
-    """Replayable evidence envelope for one governed value trajectory."""
+    """Replay commitment for one fully supplied governed value trajectory."""
 
     mnb_hash: str
     mem_nano_bit_hash: str
@@ -44,9 +53,14 @@ class MMNBEnvelope:
         })
 
     def validate(self) -> None:
-        for name, value in self.__dict__.items():
-            if not isinstance(value, str) or not value.strip():
-                raise ValidationError(f"{name} must be a non-empty string")
+        for name in (
+            "mnb_hash", "mem_nano_bit_hash", "mem_bit_hash", "m_bit_hash",
+            "rights_hash", "economic_observation_hash", "settlement_receipt_hash",
+            "ledger_tip_hash",
+        ):
+            _require_hash(name, getattr(self, name))
+        if not isinstance(self.schema_version, str) or not self.schema_version.strip():
+            raise ValidationError("schema_version must be a non-empty string")
 
 
 def build_mmnb_envelope(
@@ -60,19 +74,9 @@ def build_mmnb_envelope(
     settlement: SettlementReceipt,
     ledger_events: Sequence[Mapping[str, Any]],
 ) -> MMNBEnvelope:
-    """Verify the complete lineage and return an immutable replay commitment.
-
-    This function does not infer missing links. Every layer must be supplied and
-    must cryptographically/structurally bind to the adjacent layer.
-    """
-
-    mnb.validate()
-    mem_nano_bit.validate()
-    mem_bit.validate()
-    m_bit.validate()
-    rights.validate()
-    economic_observation.validate()
-    settlement.validate()
+    """Verify full lineage and ledger inclusion without inferring missing links."""
+    mnb.validate(); mem_nano_bit.validate(); mem_bit.validate(); m_bit.validate()
+    rights.validate(); economic_observation.validate(); settlement.validate()
 
     if mem_nano_bit.mnb.object_hash != mnb.object_hash:
         raise ValidationError("MMNB lineage mismatch: MNB -> MemNanoBit")
@@ -93,8 +97,9 @@ def build_mmnb_envelope(
 
     ledger_tip = verify_ledger_chain(ledger_events)
     if ledger_tip == "GENESIS":
-        raise ValidationError("MMNB requires a persisted settlement ledger event")
+        raise ValidationError("MMNB requires a verified settlement ledger event")
 
+    expected_payload = settlement.as_payload()
     matching = [
         event for event in ledger_events
         if event.get("event_type") == "CAPTALS_SETTLEMENT"
@@ -103,6 +108,8 @@ def build_mmnb_envelope(
     ]
     if len(matching) != 1:
         raise ValidationError("MMNB requires exactly one ledger event for the settlement receipt")
+    if dict(matching[0]["payload"]) != expected_payload:
+        raise ValidationError("MMNB ledger settlement payload does not equal supplied SettlementReceipt")
 
     envelope = MMNBEnvelope(
         mnb_hash=mnb.object_hash,
